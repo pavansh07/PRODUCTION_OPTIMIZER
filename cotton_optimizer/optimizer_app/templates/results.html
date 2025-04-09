@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Optimization Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        p {
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #2980b9;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #1f6391;
+        }
+
+        .no-results {
+            font-size: 1.1rem;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Optimization Results</h1>
+
+        {% if result %}
+            <h2>Summary</h2>
+            <p><strong>Production (kg):</strong> {{ result.production }}</p>
+            {% if result.profit is not None %}
+                <p><strong>Profit (Rs):</strong> {{ result.profit }}</p>
+            {% endif %}
+            <p><strong>Power Consumed (units):</strong> {{ result.power_consumed }}</p>
+
+            <h3>Cost Breakdown by Stage</h3>
+            <ul>
+                {% for stage, cost in result.cost_breakdown.items %}
+                    <li><strong>{{ stage }}:</strong> ₹{{ cost }}</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Overview Chart</h3>
+            <canvas id="overviewChart"></canvas>
+
+            <h3>Production Chart</h3>
+            <canvas id="productionChart"></canvas>
+
+            {% if profit_data.labels %}
+            <h3>Profit Chart</h3>
+            <canvas id="profitChart"></canvas>
+            {% endif %}
+        {% else %}
+            <p class="no-results">No results to display.</p>
+        {% endif %}
+
+        <a href="{% url 'index' %}">← Back to Form</a>
+    </div>
+
+    {% if result %}
+    <script>
+        const chart1 = new Chart(document.getElementById('overviewChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {{ chart_data.labels|safe }},
+                datasets: [{
+                    label: 'Overview',
+                    data: {{ chart_data.values|safe }},
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const chart2 = new Chart(document.getElementById('productionChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {{ production_data.labels|safe }},
+                datasets: [{
+                    label: 'Production (kg)',
+                    data: {{ production_data.values|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        {% if profit_data.labels %}
+        const chart3 = new Chart(document.getElementById('profitChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {{ profit_data.labels|safe }},
+                datasets: [{
+                    label: 'Profit (Rs)',
+                    data: {{ profit_data.values|safe }},
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+        {% endif %}
+    </script>
+    {% endif %}
+</body>
+</html>
