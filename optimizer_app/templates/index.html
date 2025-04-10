@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Production Optimizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="float"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            grid-column: span 2;
+            padding: 12px 20px;
+            background-color: #2980b9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1f6391;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .chart-section {
+            margin-top: 30px;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .cost-breakdown {
+            margin-top: 20px;
+        }
+
+        .cost-breakdown ul {
+            padding-left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-section {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Production Optimization [TEXTILE]</h1>
+
+        <h3>About Cotton Grades</h3>
+        <ul>
+            <li><strong>Grade A - Premium:</strong> High efficiency, high cost</li>
+            <li><strong>Grade B - Standard:</strong> Balanced quality and cost</li>
+            <li><strong>Grade C - Economy:</strong> Lower efficiency, lowest cost</li>
+        </ul>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-section">
+                <div>
+                    <label for="id_cotton_grade">{{ form.cotton_grade.label }}</label>
+                    {{ form.cotton_grade }}
+                </div>
+                <div>
+                    <label for="id_selling_price">{{ form.selling_price.label }}</label>
+                    {{ form.selling_price }}
+                </div>
+                <div>
+                    <label for="id_available_labor">{{ form.available_labor.label }}</label>
+                    {{ form.available_labor }}
+                </div>
+                <div>
+                    <label for="id_machine_hours">{{ form.machine_hours.label }}</label>
+                    {{ form.machine_hours }}
+                </div>
+                <div>
+                    <label for="id_optimize_for">{{ form.optimize_for.label }}</label>
+                    {{ form.optimize_for }}
+                </div>
+                <button type="submit">Optimize</button>
+            </div>
+        </form>
+
+        {% if result %}
+            <h2>Results</h2>
+            <p><strong>Production (kg):</strong> {{ result.production }}</p>
+            {% if result.profit is not None %}
+                <p><strong>Profit (Rs):</strong> {{ result.profit }}</p>
+            {% endif %}
+            <p><strong>Power Consumed (units):</strong> {{ result.power_consumed }}</p>
+
+            <div class="cost-breakdown">
+                <h3>Cost Breakdown by Stage</h3>
+                <ul>
+                    {% for stage, cost in result.cost_breakdown.items %}
+                        <li><strong>{{ stage }}:</strong> ₹{{ cost }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="chart-section">
+                <h3>Overview Chart</h3>
+                <canvas id="resultChart"></canvas>
+
+                <h3>Production Chart</h3>
+                <canvas id="productionChart"></canvas>
+
+                {% if profit_data.labels %}
+                <h3>Profit Chart</h3>
+                <canvas id="profitChart"></canvas>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% if result %}
+    <script>
+        const chart1 = new Chart(document.getElementById('resultChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {{ chart_data.labels|safe }},
+                datasets: [{
+                    label: 'Result Overview',
+                    data: {{ chart_data.values|safe }},
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const chart2 = new Chart(document.getElementById('productionChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {{ production_data.labels|safe }},
+                datasets: [{
+                    label: 'Production (kg)',
+                    data: {{ production_data.values|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        {% if profit_data.labels %}
+        const chart3 = new Chart(document.getElementById('profitChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {{ profit_data.labels|safe }},
+                datasets: [{
+                    label: 'Profit (Rs)',
+                    data: {{ profit_data.values|safe }},
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+        {% endif %}
+    </script>
+    {% endif %}
+</body>
+</html>
