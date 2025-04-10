@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-eh@rk1u&m_9zxli4rmntf!fsxu7)k&c05y6qys45jkm_lnq-kg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['cotton_optimizer.onrender.com','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
