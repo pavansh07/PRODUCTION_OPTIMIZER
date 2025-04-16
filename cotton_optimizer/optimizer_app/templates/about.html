@@ -1,0 +1,98 @@
+{% comment %} <!-- filepath: c:\Users\pavan\OneDrive\Desktop\Textile\cotton_optimizer\optimizer_app\templates\about.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Cotton Optimizer</title>
+</head>
+<body>
+    <h1>About Cotton Optimizer</h1>
+    <p>
+        Welcome to the Cotton Optimizer! This tool helps you optimize cotton yarn production
+        by calculating the most efficient production strategy based on your inputs.
+    </p>
+    <p>
+        To use this tool, provide details such as the cotton grade, available labor, and selling price.
+        The optimizer will calculate the production units, profit, and other metrics.
+    </p>
+    <button onclick="window.location.href='/index/'">Go to Solver</button>
+</body>
+</html> {% endcomment %}
+
+<!-- filepath: c:\Users\pavan\OneDrive\Desktop\Textile\cotton_optimizer\optimizer_app\templates\about.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Cotton Optimizer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 60px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #2980b9;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1f6391;
+        }
+
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>About Cotton Optimizer</h1>
+        <p>
+            Welcome to the <strong>Cotton Optimizer</strong>! This tool helps you enhance cotton yarn production
+            by calculating the most efficient production strategy based on your operational parameters.
+        </p>
+        <p>
+            Simply enter your input data such as <em>cotton grade</em>, <em>number of machines</em>, <em>run hours</em>, and <em>labor count</em>.
+            The optimizer will calculate estimated production, electricity usage, maintenance costs, and expected profits.
+        </p>
+        <div class="center">
+            <button class="btn" onclick="window.location.href='/index/'">Go to Solver</button>
+        </div>
+    </div>
+</body>
+</html>

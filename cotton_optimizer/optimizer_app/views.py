@@ -67,3 +67,5 @@ def results(request):
         'production_data': production_data,
         'profit_data': profit_data
     })
+def about(request):
+    return render(request, 'about.html')
